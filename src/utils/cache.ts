@@ -3,14 +3,21 @@ import { fatal } from './logs';
 
 const currentDir = process.cwd();
 const cacheDir = `${currentDir}/.doccy`;
-const cacheFile = Bun.file(`${cacheDir}/cache.yaml`);
+let cacheFile = Bun.file(`${cacheDir}/cache.yaml`);
 
-if (await cacheFile.exists() === false) {
-	await cacheFile.write('');
+/** @internal Reset cache file reference. Only intended for use in tests. */
+export function _setCacheFile(path: string) {
+	cacheFile = Bun.file(path);
 }
 
-const cacheRaw = await cacheFile.text();
-const cacheContent = (Bun.YAML.parse(cacheRaw) || {}) as CacheContent;
+async function getContent() {
+	if (await cacheFile.exists() === false) {
+		await cacheFile.write('');
+	}
+
+	const cacheRaw = await cacheFile.text();
+	return (Bun.YAML.parse(cacheRaw) || {}) as CacheContent;
+}
 
 // MARK: main
 
@@ -46,9 +53,11 @@ export async function ensureCacheDir() {
 	}
 }
 
-export async function isCacheValid(filePath:string) {
+export async function isCacheValid(filePath: string) {
 	const fileRaw = await Bun.file(filePath).text();
 	const fileHash = Bun.MD5.hash(fileRaw, 'hex');
+
+	const cacheContent = await getContent();
 
 	return filePath in cacheContent && cacheContent[filePath]?.hash === fileHash;
 }
@@ -57,16 +66,23 @@ export async function setFileEntryResultInCache(filePath: string, result: any) {
 	const fileRaw = await Bun.file(filePath).text();
 	const fileHash = Bun.MD5.hash(fileRaw, 'hex');
 
+	const cacheContent = await getContent();
+
 	cacheContent[filePath] = {
 		hash: fileHash,
 		data: result,
 	};
 
-	await cacheFile.write(Bun.YAML.stringify(cacheContent, null, 2));
+	const yamlStr = Bun.YAML.stringify(cacheContent, null, 2);
+	await cacheFile.write(yamlStr);
+	// Refresh the Bun.file() reference so subsequent reads see the new data.
+	// (Bun.file() can return stale content from a prior reference after a write.)
+	cacheFile = Bun.file(cacheFile.name!);
 }
 
 export async function getFileEntryResultFromCache(filePath: string) {
 	if (await isCacheValid(filePath)) {
+		const cacheContent = await getContent();
 		return cacheContent[filePath]?.data || null;
 	}
 	return null;

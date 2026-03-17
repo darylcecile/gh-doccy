@@ -26,6 +26,11 @@ type Config = z.infer<typeof configSchema>;
 
 let cachedConfig: Config | null = null;
 
+/** @internal Reset the config cache. Only intended for use in tests. */
+export function _resetConfigCache() {
+	cachedConfig = null;
+}
+
 export async function loadConfig(): Promise<Config> {
 	if (cachedConfig) return cachedConfig;
 

@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { spellCheck } from "../utils/dictionary";
+import { spellCheck, getDictionary } from "../utils/dictionary";
 
 describe("spellCheck", () => {
 	test("returns no issues for correct text", async () => {
@@ -69,5 +69,22 @@ describe("spellCheck", () => {
 		const testss = issues.find(i => i.word === "testss");
 		expect(testss).toBeDefined();
 		expect(testss!.line).toBe(5);
+	});
+});
+
+describe("getDictionary", () => {
+	test("loads en_US dictionary by default", async () => {
+		const dict = await getDictionary();
+		expect(dict).toBeDefined();
+	});
+
+	test("loads en_US dictionary explicitly", async () => {
+		const dict = await getDictionary("en_US");
+		expect(dict).toBeDefined();
+	});
+
+	test("loads en_GB dictionary", async () => {
+		const dict = await getDictionary("en_GB");
+		expect(dict).toBeDefined();
 	});
 });

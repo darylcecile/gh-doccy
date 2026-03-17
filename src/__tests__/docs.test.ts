@@ -1,4 +1,4 @@
-import { describe, test, expect } from "bun:test";
+import { describe, test, expect, spyOn } from "bun:test";
 import { parseDoc, serializeFrontMatter } from "../utils/docs";
 
 describe("parseDoc", () => {
@@ -70,6 +70,27 @@ describe("parseDoc", () => {
 		const result = parseDoc(raw);
 
 		expect(result.frontmatter!.description).toBe("A test document");
+	});
+
+	test("calls fatal when frontmatter YAML fails schema validation", () => {
+		const errorSpy = spyOn(console, "error").mockImplementation(() => {});
+		const exitSpy = spyOn(process, "exit").mockImplementation(() => undefined as never);
+
+		// Valid YAML delimiters but invalid schema (metadata must be an object)
+		const raw = [
+			"---",
+			"not_valid_key: true",
+			"---",
+			"Body",
+		].join("\n");
+
+		parseDoc(raw);
+
+		// fatal() calls process.exit(1)
+		expect(exitSpy).toHaveBeenCalledWith(1);
+
+		errorSpy.mockRestore();
+		exitSpy.mockRestore();
 	});
 });
 
