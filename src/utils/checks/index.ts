@@ -43,13 +43,14 @@ export function severityOf(type: string): Severity {
  * Run all registered checks against a single file.
  * Returns all issues found (may be empty).
  */
-export async function runChecks(ctx: CheckContext): Promise<LintIssue[]> {
+export async function runChecks(ctx: CheckContext, onCheck?: (checkId: string) => void): Promise<LintIssue[]> {
 	const issues: LintIssue[] = [];
 
 	for (const check of checks) {
 		const severity = severityOf(check.id);
 		if (severity === "off") continue;
 
+		onCheck?.(check.id);
 		const result = await check.check(ctx);
 		issues.push(...result);
 	}

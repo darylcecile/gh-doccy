@@ -23,6 +23,7 @@ export function cli() {
 		.option('-u, --unstaged', 'Only lint files that have unstaged changes', false)
 		.option('-f, --force', 'Force linting skipping cache', false)
 		.option('-l, --level <level>', 'Only show issues with "error" severity, hiding "warn" level issues') // default to error output in CI environments
+		.option('-v, --verbose', 'Show progress spinner while linting', false)
 		.action(opt => lintDocs(opt));
 
 	program.command('review')
