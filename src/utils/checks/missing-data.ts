@@ -3,17 +3,17 @@ import dayjs from 'dayjs';
 import { loadConfig } from '../config';
 import { serializeFrontMatter, type FrontMatter } from '../docs';
 import { style } from '../logs';
-import type { CheckAdapter, CheckContext, FixAction, FormatContext, LintIssue } from './types';
+import { defineCheck } from './types';
 
 const config = await loadConfig();
 
 export type MissingDataDetails = Array<{ message: string }>;
 
-export const missingDataCheck: CheckAdapter<MissingDataDetails> = {
+export const missingDataCheck= defineCheck<MissingDataDetails>({
 	id: "missing-data",
 	configKey: "missingData",
 
-	check(ctx: CheckContext): LintIssue<MissingDataDetails>[] {
+	check(ctx) {
 		const messages: { message: string }[] = [];
 
 		if (!ctx.frontmatter) {
@@ -97,4 +97,4 @@ export const missingDataCheck: CheckAdapter<MissingDataDetails> = {
 		const content = serializeFrontMatter(newFrontmatter) + "\n" + raw;
 		return { content, applied: 1 };
 	},
-};
+});

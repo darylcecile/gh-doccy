@@ -4,7 +4,8 @@ import { ms } from 'ms';
 import { loadConfig } from '../config';
 import { parseDoc, serializeFrontMatter } from '../docs';
 import { style } from '../logs';
-import type { CheckAdapter, CheckContext, FixAction, FormatContext, LintIssue } from './types';
+import { defineCheck } from './types';
+import type { CheckContext, LintIssue } from './types';
 
 const config = await loadConfig();
 
@@ -13,11 +14,11 @@ export type StaleDetails = {
 	staleness: string;
 };
 
-export const stalenessCheck: CheckAdapter<StaleDetails> = {
+export const stalenessCheck = defineCheck<StaleDetails>({
 	id: "stale",
 	configKey: "staleness",
 
-	check(ctx: CheckContext): LintIssue<StaleDetails>[] {
+	check(ctx) {
 		if (!ctx.frontmatter) return [];
 		if (!('lastUpdated' in ctx.frontmatter.metadata)) return [];
 
@@ -92,7 +93,7 @@ export const stalenessCheck: CheckAdapter<StaleDetails> = {
 		const result = serializeFrontMatter(frontmatter) + "\n" + content.trimStart();
 		return { content: result, applied: 1 };
 	},
-};
+});
 
 function isValidDateFormat(dateStr?: string): boolean {
 	if (!dateStr) return false;

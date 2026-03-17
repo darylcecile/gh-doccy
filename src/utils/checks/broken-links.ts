@@ -1,15 +1,15 @@
 import * as p from '@clack/prompts';
 import { checkLinks, type BrokenLinkIssue } from '../links';
 import { style } from '../logs';
-import type { CheckAdapter, CheckContext, FixAction, FormatContext, LintIssue } from './types';
+import { defineCheck, type CheckAdapter, type CheckContext, type FixAction, type FormatContext, type LintIssue } from './types';
 
 export type { BrokenLinkIssue };
 
-export const brokenLinksCheck: CheckAdapter<BrokenLinkIssue[]> = {
+export const brokenLinksCheck= defineCheck<BrokenLinkIssue[]>({
 	id: "broken-link",
 	configKey: "brokenLinks",
 
-	check(ctx: CheckContext): LintIssue<BrokenLinkIssue[]>[] {
+	check(ctx) {
 		const issues = checkLinks(ctx.content, ctx.filePath);
 		if (issues.length === 0) return [];
 		return [{ filePath: ctx.filePath, type: "broken-link", details: issues }];
@@ -56,4 +56,4 @@ export const brokenLinksCheck: CheckAdapter<BrokenLinkIssue[]> = {
 	},
 
 	// No applyFixes — broken links cannot be auto-fixed
-};
+});

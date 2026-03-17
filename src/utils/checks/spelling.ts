@@ -1,17 +1,15 @@
 import * as p from '@clack/prompts';
 import { spellCheck, type SpellingIssue } from '../dictionary';
 import { style } from '../logs';
-import type { CheckAdapter, CheckContext, FixAction, FormatContext, LintIssue } from './types';
+import { defineCheck, type FormatContext } from './types';
 
 export type { SpellingIssue };
 
-const CONTEXT_RADIUS = 30;
-
-export const spellingCheck: CheckAdapter<SpellingIssue[]> = {
+export const spellingCheck = defineCheck<SpellingIssue[]>({
 	id: "spelling",
 	configKey: "spelling",
 
-	async check(ctx: CheckContext): Promise<LintIssue<SpellingIssue[]>[]> {
+	async check(ctx) {
 		const issues = await spellCheck(ctx.content);
 		if (issues.length === 0) return [];
 		return [{ filePath: ctx.filePath, type: "spelling", details: issues }];
@@ -115,7 +113,7 @@ export const spellingCheck: CheckAdapter<SpellingIssue[]> = {
 
 		return { content, applied };
 	},
-};
+});
 
 // ── Helpers ──────────────────────────────────────────────
 

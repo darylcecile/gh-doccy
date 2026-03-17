@@ -106,3 +106,7 @@ export interface CheckAdapter<TDetails = unknown> {
 	 */
 	applyFixes?(raw: string, fixes: FixAction[]): { content: string; applied: number };
 }
+
+export function defineCheck<TDetails>(adapter: CheckAdapter<TDetails>): CheckAdapter<TDetails> {
+	return adapter;
+}
