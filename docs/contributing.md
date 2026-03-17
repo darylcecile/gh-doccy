@@ -50,6 +50,8 @@ gh-doccy/
 │   │   ├── lint.ts       # `gh doccy lint` — check docs for issues
 │   │   └── review.ts     # `gh doccy review` — interactive fix flow
 │   ├── utils/            # Shared utilities
+│   │   ├── checks/      # Lint check adapters (spelling, staleness, etc.)
+│   │   └── lang/        # Hunspell dictionary files
 │   └── __tests__/        # Test files
 ├── docs/                 # Project documentation (linted by gh-doccy itself)
 ├── .doccyrc.yaml         # Linter configuration
