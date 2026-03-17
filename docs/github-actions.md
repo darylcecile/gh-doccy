@@ -1,6 +1,6 @@
 ---
 metadata:
-  lastUpdated: 2026-03-17
+  lastUpdated: 17-Mar-2026
   staleness: 30d
   tags:
     - ci
@@ -100,7 +100,7 @@ Example frontmatter with a 30-day staleness window:
 ```markdown
 ---
 metadata:
-  lastUpdated: 2026-03-17
+  lastUpdated: 17-Mar-2026
   staleness: 30d
 ---
 ```

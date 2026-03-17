@@ -1,6 +1,6 @@
 ---
 metadata:
-  lastUpdated: 2026-03-17
+  lastUpdated: 17-Mar-2026
   staleness: 30d
   tags:
     - configuration
@@ -85,7 +85,7 @@ Each markdown document can include YAML frontmatter with a `metadata` block:
 ```yaml
 ---
 metadata:
-  lastUpdated: 2026-03-17
+  lastUpdated: 17-Mar-2026
   staleness: 30d
   tags:
     - guide
