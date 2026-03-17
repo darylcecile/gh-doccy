@@ -42,7 +42,7 @@ A list of markdown AST node types to skip during spell-checking. Common values:
 
 ### `dictionaryLang`
 
-The Hunspell dictionary language for spell-checking.
+The [Hunspell](https://hunspell.github.io/) dictionary language for spell-checking. Dictionaries are sourced from [wordlist.aspell.net](https://wordlist.aspell.net).
 
 - `en_US` — American English (default)
 - `en_GB` — British English
