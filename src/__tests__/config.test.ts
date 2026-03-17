@@ -1,10 +1,11 @@
 import { describe, test, expect, spyOn, beforeEach, afterEach } from "bun:test";
-import { loadConfig, initConfig, _resetConfigCache } from "../utils/config";
+import { loadConfig, initConfig } from "../utils/config";
+import { weakCache } from "../utils/mem";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-// Note: loadConfig() has an internal cache. We use _resetConfigCache()
-// to clear it between tests so each test gets a fresh loadConfig() call.
+// Note: loadConfig() caches via weakCache.passThrough("config", ...).
+// We use weakCache.remove("config") to clear it between tests.
 
 describe("loadConfig", () => {
 	test("returns a config object with expected default fields", async () => {
@@ -48,14 +49,14 @@ describe("loadConfig edge cases", () => {
 	const tmpDir = path.join(process.cwd(), "__test_config_edge_tmp__");
 
 	beforeEach(() => {
-		_resetConfigCache();
+		weakCache.remove("config");
 		mkdirSync(tmpDir, { recursive: true });
 		spyOn(process, "cwd").mockReturnValue(tmpDir);
 	});
 
 	afterEach(() => {
 		(process.cwd as any).mockRestore?.();
-		_resetConfigCache();
+		weakCache.remove("config");
 		rmSync(tmpDir, { recursive: true, force: true });
 	});
 
@@ -69,7 +70,7 @@ describe("loadConfig edge cases", () => {
 		expect(config.defaultStalenessThreshold).toBe("30d");
 	});
 
-	test("calls fatal when config file fails validation (line 49)", async () => {
+	test("calls fatal when config file fails validation", async () => {
 		// Write a config file that fails zod validation
 		writeFileSync(
 			path.join(tmpDir, ".doccyrc.yaml"),
@@ -85,8 +86,9 @@ describe("loadConfig edge cases", () => {
 		expect(errorSpy).toHaveBeenCalled();
 		expect(exitSpy).toHaveBeenCalledWith(1);
 
-		// After fatal (mocked), cachedConfig is still null, so loadConfig returns null
-		expect(config).toBeNull();
+		// After fatal (mocked to not exit), execution continues past the catch
+		// block and falls through to the default config at line 52.
+		expect(config).toHaveProperty("skipTypes");
 
 		exitSpy.mockRestore();
 		errorSpy.mockRestore();

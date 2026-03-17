@@ -9,26 +9,29 @@ import enGBLargeDIC from "./lang/en_GB-large.dic" with { type: "file" };
 import enUSLargeAFF from "./lang/en_US-large.aff" with { type: "file" };
 import enUSLargeDIC from "./lang/en_US-large.dic" with { type: "file" };
 import { loadConfig } from './config';
+import { weakCache } from "./mem";
 
 const spellchecker = new Spellcheck();
 const config = await loadConfig();
 
-export async function getDictionary(lang: "en_GB"|"en_US" = "en_US") {
+export async function getDictionary(lang: "en_GB" | "en_US" = "en_US") {
 	// https://wordlist.aspell.net/dicts/
-	switch(lang) {
-		case "en_GB":
-			return spellchecker.parse({
-				aff: readFileSync(enGBLargeAFF),
-				dic: readFileSync(enGBLargeDIC)
-			});
-		case "en_US":
-			return spellchecker.parse({
-				aff: readFileSync(enUSLargeAFF),
-				dic: readFileSync(enUSLargeDIC)
-			});
-		default:
-			fatal(`Unsupported language: ${lang}`);
-	}
+	return weakCache.passThrough(`dictionary-${lang}`, () => {
+		switch (lang) {
+			case "en_GB":
+				return spellchecker.parse({
+					aff: readFileSync(enGBLargeAFF),
+					dic: readFileSync(enGBLargeDIC)
+				});
+			case "en_US":
+				return spellchecker.parse({
+					aff: readFileSync(enUSLargeAFF),
+					dic: readFileSync(enUSLargeDIC)
+				});
+			default:
+				fatal(`Unsupported language: ${lang}`);
+		}
+	});
 }
 
 export type SpellingIssue = {
@@ -47,7 +50,7 @@ const SKIP_TYPES = new Set(config.skipTypes || []);
 const CONTEXT_RADIUS = 30;
 
 export async function spellCheck(markdown: string): Promise<SpellingIssue[]> {
-	const dictionary = await getDictionary();
+	const dictionary = await getDictionary(config.dictionaryLang);
 	spellchecker.use(dictionary);
 
 	const tree = fromMarkdown(markdown);

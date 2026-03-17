@@ -1,6 +1,7 @@
 import z from "zod";
 import { fatal } from "./logs";
 import { parse, type StringValue } from "ms";
+import { weakCache } from "./mem";
 
 const configSchema = z.object({
 	skipTypes: z.array(z.string()).optional().default(["code", "inlineCode", "html"]),
@@ -24,42 +25,32 @@ const configSchema = z.object({
 
 type Config = z.infer<typeof configSchema>;
 
-let cachedConfig: Config | null = null;
-
-/** @internal Reset the config cache. Only intended for use in tests. */
-export function _resetConfigCache() {
-	cachedConfig = null;
-}
-
 export async function loadConfig(): Promise<Config> {
-	if (cachedConfig) return cachedConfig;
+	return weakCache.passThrough("config", async () => {
+		const configFiles = [
+			`${process.cwd()}/.doccyrc`,
+			`${process.cwd()}/.doccyrc.yaml`,
+			`${process.cwd()}/.doccyrc.json`,
+			`${process.cwd()}/config/.doccyrc`,
+			`${process.cwd()}/config/.doccyrc.yaml`,
+			`${process.cwd()}/config/.doccyrc.json`
+		];
 
-	const configFiles = [
-		`${process.cwd()}/.doccyrc`,
-		`${process.cwd()}/.doccyrc.yaml`,
-		`${process.cwd()}/.doccyrc.json`,
-		`${process.cwd()}/config/.doccyrc`,
-		`${process.cwd()}/config/.doccyrc.yaml`,
-		`${process.cwd()}/config/.doccyrc.json`
-	];
+		for (const configPath of configFiles) {
+			const configFile = Bun.file(configPath);
+			if (await configFile.exists()) {
+				const rawContent = await configFile.text();
 
-	for (const configPath of configFiles) {
-		const configFile = Bun.file(configPath);
-		if (await configFile.exists()) {
-			const rawContent = await configFile.text();
-
-			try{
-				const content = configSchema.parse(configPath.endsWith(".json") ? JSON.parse(rawContent) : Bun.YAML.parse(rawContent));
-				cachedConfig = content;
-			} catch (err) {
-				fatal(`Failed to parse config file at ${configPath}: ${err}`);
+				try {
+					return configSchema.parse(configPath.endsWith(".json") ? JSON.parse(rawContent) : Bun.YAML.parse(rawContent));
+				} catch (err) {
+					fatal(`Failed to parse config file at ${configPath}: ${err}`);
+				}
 			}
-			
-			return cachedConfig;
 		}
-	}
 
-	return configSchema.parse({});
+		return configSchema.parse({});
+	});
 }
 
 export async function initConfig() {
