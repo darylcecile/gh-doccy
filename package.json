@@ -1,0 +1,28 @@
+{
+  "name": "git-doccy",
+  "module": "index.ts",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "bun build src/index.ts --compile --sourcemap --format=esm --bytecode --outfile dist/doccy"
+  },
+  "devDependencies": {
+    "@catmint-fs/core": "0.0.0-prealpha.6",
+    "@types/bun": "latest",
+    "@types/hunspell-spellchecker": "^1.0.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.1.0",
+    "commander": "^14.0.3",
+    "dayjs": "^1.11.20",
+    "hunspell-spellchecker": "^1.0.2",
+    "mdast-util-from-markdown": "^2.0.3",
+    "ms": "4.0.0-nightly.202508271359",
+    "unist-util-visit": "^5.1.0",
+    "zod": "^4.3.6"
+  }
+}

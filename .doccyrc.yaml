@@ -1,0 +1,12 @@
+skipTypes: 
+  - code
+  - inlineCode
+  - html
+dictionaryLang: en_US
+dateFormat: DD-MMM-YYYY
+defaultStalenessThreshold: 30d
+strictness: 
+  spelling: warn
+  staleness: error
+  missingData: warn
+  brokenLinks: error
