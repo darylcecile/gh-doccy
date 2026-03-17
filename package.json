@@ -4,7 +4,7 @@
   "version": "0.0.2",
   "type": "module",
   "bin": {
-	"doccy": "./src/index.ts"
+    "doccy": "src/index.ts"
   },
   "files": [
     "src",
