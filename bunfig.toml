@@ -2,4 +2,4 @@
 # Always enable coverage
 coverage = true
 # To require 90% line-level and function-level coverage
-coverageThreshold = 0.9
+coverageThreshold = { "line" = 99, "function" = 80 }

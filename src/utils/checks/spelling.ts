@@ -1,5 +1,6 @@
 import * as p from '@clack/prompts';
 import { spellCheck, type SpellingIssue } from '../dictionary';
+import { parseDoc } from '../docs';
 import { style } from '../logs';
 import { defineCheck, type FormatContext } from './types';
 
@@ -98,15 +99,23 @@ export const spellingCheck = defineCheck<SpellingIssue[]>({
 			.filter(f => f.kind === "spelling")
 			.sort((a, b) => (b.offset as number) - (a.offset as number));
 
+		if (spellingFixes.length === 0) return { content: raw, applied: 0 };
+
+		// Spelling offsets are relative to the body content (frontmatter replaced
+		// with padding newlines). Adjust them to the raw file coordinates.
+		const { frontmatterLineCount, frontmatterCharCount } = parseDoc(raw);
+		const offsetDelta = frontmatterCharCount - frontmatterLineCount;
+
 		let content = raw;
 		let applied = 0;
 
 		for (const fix of spellingFixes) {
-			const offset = fix.offset as number;
+			const bodyOffset = fix.offset as number;
+			const rawOffset = bodyOffset + offsetDelta;
 			const word = fix.word as string;
 			const replacement = fix.replacement as string;
-			const before = content.slice(0, offset);
-			const after = content.slice(offset + word.length);
+			const before = content.slice(0, rawOffset);
+			const after = content.slice(rawOffset + word.length);
 			content = before + replacement + after;
 			applied++;
 		}

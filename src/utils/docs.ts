@@ -9,7 +9,7 @@ const frontMatterSchema = z.object({
 		lastUpdated: z.string().optional(),
 		staleness: z.string().optional().refine(d => !d || !isNaN(parse(d)), { message: "stale must be a valid duration string, e.g. '30d', '2 weeks', etc." })  as z.ZodOptional<z.ZodType<StringValue>>,
 	}).catchall(z.unknown())
-});
+}).catchall(z.unknown());
 
 export type FrontMatter = z.infer<typeof frontMatterSchema>;
 
@@ -29,6 +29,8 @@ type ParsedDoc = {
 	content: string;
 	/** Number of lines occupied by the frontmatter block (including delimiters) */
 	frontmatterLineCount: number;
+	/** Number of characters occupied by the frontmatter block (including delimiters) */
+	frontmatterCharCount: number;
 }
 
 
@@ -42,7 +44,7 @@ const FRONTMATTER_REGEX = /^---\r?\n([\s\S]*?\r?\n)---\r?\n?/;
 export function parseDoc(raw: string): ParsedDoc {
 	const match = raw.match(FRONTMATTER_REGEX);
 	if (!match) {
-		return { frontmatter: null, content: raw, frontmatterLineCount: 0 };
+		return { frontmatter: null, content: raw, frontmatterLineCount: 0, frontmatterCharCount: 0 };
 	}
 
 	const frontmatterYaml = match[1]!;
@@ -57,5 +59,5 @@ export function parseDoc(raw: string): ParsedDoc {
 		fatal(`Failed to parse frontmatter YAML: ${err}`);
 	}
 
-	return { frontmatter, content, frontmatterLineCount };
+	return { frontmatter, content, frontmatterLineCount, frontmatterCharCount: fullMatch.length };
 }

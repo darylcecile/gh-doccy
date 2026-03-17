@@ -17,6 +17,8 @@ export type CheckContext = {
 	frontmatter: FrontMatter | null;
 	/** Number of lines the frontmatter occupies */
 	frontmatterLineCount: number;
+	/** Number of characters the frontmatter block occupies (including delimiters) */
+	frontmatterCharCount: number;
 }
 
 /**

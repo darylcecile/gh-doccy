@@ -92,6 +92,24 @@ describe("reviewDocs", () => {
 		expect(content).not.toContain("testss");
 	});
 
+	test("applies spelling fixes correctly with frontmatter present", async () => {
+		const today = dayjs().format("DD-MMM-YYYY");
+		const testFile = path.join(tmpDir, `spelling-fm-${Date.now()}.md`);
+		writeFileSync(
+			testFile,
+			`---\nmetadata:\n  lastUpdated: ${today}\n---\n\n# Hello\n\nSome testss word.`,
+		);
+
+		await reviewDocs({ glob: `${tmpDirName}/**/*.md`, unstaged: false, yes: true });
+
+		const content = await Bun.file(testFile).text();
+		expect(content).toContain("tests");
+		expect(content).not.toContain("testss");
+		// Frontmatter should remain intact
+		expect(content).toContain("---");
+		expect(content).toContain("lastUpdated");
+	});
+
 	test("passes unstaged option through", async () => {
 		writeDoc(`unstaged-${Date.now()}.md`, "# Hello\n\nSome text.");
 		await reviewDocs({ glob: `${tmpDirName}/**/*.md`, unstaged: true, yes: false });

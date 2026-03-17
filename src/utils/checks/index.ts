@@ -61,8 +61,8 @@ export async function runChecks(ctx: CheckContext): Promise<LintIssue[]> {
  * Build a CheckContext from a file path and its raw content.
  */
 export function buildCheckContext(filePath: string, raw: string): CheckContext {
-	const { frontmatter, content, frontmatterLineCount } = parseDoc(raw);
-	return { filePath, raw, content, frontmatter, frontmatterLineCount };
+	const { frontmatter, content, frontmatterLineCount, frontmatterCharCount } = parseDoc(raw);
+	return { filePath, raw, content, frontmatter, frontmatterLineCount, frontmatterCharCount };
 }
 
 /** Group an array by a key function. */
