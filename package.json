@@ -2,6 +2,7 @@
   "name": "gh-doccy",
   "module": "index.ts",
   "version": "0.0.2",
+  "license": "MIT",
   "type": "module",
   "repository": {
 	"url": "https://github.com/darylcecile/gh-doccy"
