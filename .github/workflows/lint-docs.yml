@@ -13,9 +13,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install gh-doccy
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/darylcecile/gh-doccy/main/install.sh | bash
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+        run: gh extension install darylcecile/gh-doccy
 
       - name: Lint documentation
-        run: gh-doccy lint
+        run: gh doccy lint
