@@ -6,7 +6,7 @@ on:
 
 permissions:
     id-token: write  # Required for OIDC
-    contents: read
+    contents: write  # Required for creating releases and tags
 
 jobs:
   check-version:
@@ -17,22 +17,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Check if version changed
         id: check
         run: |
           CURRENT_VERSION=$(jq -r '.version' package.json)
-          PREVIOUS_VERSION=$(git show HEAD~1:package.json | jq -r '.version')
+          TAG="v${CURRENT_VERSION}"
 
-          echo "current=$CURRENT_VERSION"
-          echo "previous=$PREVIOUS_VERSION"
+          echo "version=$CURRENT_VERSION"
+          echo "tag=$TAG"
 
-          if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
+          # Check if a release already exists for this version
+          if git tag -l | grep -qx "$TAG"; then
+            echo "Tag $TAG already exists — skipping release"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Tag $TAG does not exist — proceeding with release"
             echo "changed=true" >> "$GITHUB_OUTPUT"
             echo "version=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
 
   build:
