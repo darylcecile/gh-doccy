@@ -97,9 +97,7 @@ jobs:
     #       registry-url: https://registry.npmjs.org
 
       - name: Publish to npm
-        run: npm publish --provenance 
-        env:
-          NODE_AUTH_TOKEN: ""  # Clear the placeholder set by setup-node so OIDC auth is used
+        run: npm publish --provenance
 
   release:
     needs: [check-version, build, npm-publish]
