@@ -1,4 +1,4 @@
-# git-doccy
+# gh-doccy
 
 To install dependencies:
 

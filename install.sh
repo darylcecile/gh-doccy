@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="darylcecile/git-doccy"
+REPO="darylcecile/gh-doccy"
 INSTALL_DIR="${HOME}/.local/bin"
 BINARY_NAME="gh-doccy"
 
@@ -11,7 +11,7 @@ case "$(uname -s)" in
   Darwin*) OS="darwin" ;;
   *)
     echo "Error: Unsupported operating system '$(uname -s)'"
-    echo "git-doccy supports Linux and macOS only."
+    echo "gh-doccy supports Linux and macOS only."
     exit 1
     ;;
 esac
@@ -45,7 +45,7 @@ fi
 
 DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${VERSION}/${ARTIFACT}"
 
-echo "Installing git-doccy ${VERSION} (${OS}/${ARCH})..."
+echo "Installing gh-doccy ${VERSION} (${OS}/${ARCH})..."
 
 # Create install directory
 mkdir -p "${INSTALL_DIR}"
