@@ -90,9 +90,6 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: false  # Disable automatic token authentication
-          fetch-depth: 0  # Fetch all history for accurate version checking
 
       - name: Clear auth token for OIDC
         run: echo "NODE_AUTH_TOKEN=" >> $GITHUB_ENV
