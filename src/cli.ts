@@ -21,6 +21,7 @@ export function cli() {
 		.description('Check the documentation for issues and staleness')
 		.option('-g, --glob <pattern>', 'Glob pattern to specify which markdown files to lint', 'docs/**/*.md')
 		.option('-u, --unstaged', 'Only lint files that have unstaged changes', false)
+		.option('-f, --force', 'Force linting skipping cache', false)
 		.option('-l, --level <level>', 'Only show issues with "error" severity, hiding "warn" level issues') // default to error output in CI environments
 		.action(opt => lintDocs(opt));
 

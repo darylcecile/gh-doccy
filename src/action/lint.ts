@@ -8,6 +8,7 @@ export type LintOptions = {
 	glob: string;
 	unstaged: boolean;
 	level?: "error" | "warn";
+	force?: boolean;
 }
 
 /** Returns a styled severity badge: yellow for warn, red for error. */
@@ -32,7 +33,7 @@ const severityConcisenessFilters = {
 // MARK: Display 
 
 export async function lintDocs(opt: LintOptions) {
-	const allIssues = await getLintIssues(opt.glob, opt.unstaged);
+	const allIssues = await getLintIssues(opt.glob, opt.unstaged, opt.force);
 	
 	// Filter out issues whose strictness is "off"
 	const issues = allIssues.filter(i => {

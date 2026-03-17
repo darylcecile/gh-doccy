@@ -6,7 +6,7 @@ import type { LintIssue, Severity } from './checks';
 export { severityOf, groupBy };
 export type { LintIssue, Severity };
 
-export async function getLintIssues(glob: string, unstaged: boolean = false) {
+export async function getLintIssues(glob: string, unstaged: boolean = false, ignoreCache: boolean = false) {
 	await ensureCacheDir();
 	const cwd = process.cwd();
 	const files = new Bun.Glob(glob).scan({ cwd });
@@ -27,7 +27,7 @@ export async function getLintIssues(glob: string, unstaged: boolean = false) {
 	for (const filePath of filePaths) {
 		const file = Bun.file(filePath);
 
-		const c = await getFileEntryResultFromCache(filePath);
+		const c = ignoreCache ? undefined : await getFileEntryResultFromCache(filePath);
 
 		if (c?.issues) {
 			issues.push(...c.issues);
