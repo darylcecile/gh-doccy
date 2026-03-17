@@ -1,4 +1,4 @@
-import { mkdir } from 'node:fs/promises';
+import { mkdir, readFile, appendFile } from 'node:fs/promises';
 import { fatal } from './logs';
 
 const currentDir = process.cwd();
@@ -30,6 +30,19 @@ export async function ensureCacheDir() {
 		await mkdir(cacheDir, { recursive: true });
 	} catch (err) {
 		fatal(`Failed to create cache directory at ${cacheDir}: ${err}`);
+	}
+
+	const gitignorePath = `${currentDir}/.gitignore`;
+	const gitignoreFile = Bun.file(gitignorePath);
+
+	if (await gitignoreFile.exists()) {
+		const content = await readFile(gitignorePath, 'utf-8');
+		const lines = content.split('\n').map(line => line.trim());
+
+		if (!lines.includes('.doccy')) {
+			const suffix = content.endsWith('\n') ? '' : '\n';
+			await appendFile(gitignorePath, `${suffix}.doccy\n`);
+		}
 	}
 }
 
