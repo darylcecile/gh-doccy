@@ -27,53 +27,19 @@ on:
 jobs:
   lint-docs:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
 
-      - uses: oven-sh/setup-bun@v2
-
       - name: Install gh-doccy
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/darylcecile/gh-doccy/main/install.sh | bash
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+        run: gh extension install darylcecile/gh-doccy
 
       - name: Lint documentation
-        run: gh-doccy lint
+        run: gh doccy lint
 ```
 
-## Using the Install Script
-
-The `install.sh` script auto-detects the runner's OS and architecture, then downloads the correct binary from GitHub Releases:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/darylcecile/gh-doccy/main/install.sh | bash
-```
-
-Pin a specific version:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/darylcecile/gh-doccy/main/install.sh | bash -s v0.0.2
-```
-
-The binary is installed to `~/.local/bin/gh-doccy`. Add it to `$GITHUB_PATH` so subsequent steps can use it:
-
-```bash
-echo "$HOME/.local/bin" >> $GITHUB_PATH
-```
-
-## Using with Bun Directly
-
-If your project already uses Bun, you can skip the binary install and run from source:
-
-```yaml
-- uses: oven-sh/setup-bun@v2
-
-- name: Install dependencies
-  run: bun install --frozen-lockfile
-
-- name: Lint documentation
-  run: bun run src/index.ts lint
-```
+The workflow installs gh-doccy as a GitHub CLI extension (the `gh` CLI is pre-installed on GitHub-hosted runners). The `GH_TOKEN` environment variable is required for `gh` to authenticate.
 
 ## CI Behavior
 
@@ -111,7 +77,7 @@ To lint only files modified in a PR:
 
 ```yaml
 - name: Lint changed docs
-  run: gh-doccy lint --unstaged
+  run: gh doccy lint --unstaged
 ```
 
 ## Custom Glob Patterns
@@ -120,5 +86,5 @@ Lint files outside the default `docs/` directory:
 
 ```yaml
 - name: Lint all markdown
-  run: gh-doccy lint --glob "**/*.md"
+  run: gh doccy lint --glob "**/*.md"
 ```
