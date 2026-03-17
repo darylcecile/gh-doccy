@@ -6,6 +6,11 @@
   "bin": {
 	"doccy": "./src/index.ts"
   },
+  "files": [
+    "src",
+    "!src/__tests__",
+    "types.d.ts"
+  ],
   "scripts": {
     "build": "bun build src/index.ts --compile --sourcemap --format=esm --bytecode --outfile dist/doccy"
   },
