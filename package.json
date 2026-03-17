@@ -1,9 +1,11 @@
 {
-  "name": "git-doccy",
+  "name": "gh-doccy",
   "module": "index.ts",
   "version": "0.0.1",
   "type": "module",
-  "private": true,
+  "bin": {
+	"doccy": "./src/index.ts"
+  },
   "scripts": {
     "build": "bun build src/index.ts --compile --sourcemap --format=esm --bytecode --outfile dist/doccy"
   },
