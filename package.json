@@ -3,6 +3,9 @@
   "module": "index.ts",
   "version": "0.0.2",
   "type": "module",
+  "repository": {
+	"url": "https://github.com/darylcecile/gh-doccy"
+  },
   "bin": {
     "doccy": "src/index.ts"
   },
