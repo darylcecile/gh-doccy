@@ -4,10 +4,10 @@ import { lintDocs } from "./action/lint";
 import { reviewDocs } from './action/review';
 import { loadConfig } from './utils/config';
 
-export async function cli() {
-	const config = await loadConfig();
-	const defaultGlob = `${config.root}/**/*.md`;
+const config = await loadConfig();
+const defaultGlob = `${config.root}/**/*.md`;
 
+export function cli() {
 	const program = new Command();
 
 	program
