@@ -1,3 +1,5 @@
+import ora from 'ora';
+import path from 'node:path';
 import { ensureCacheDir, getFileEntryResultFromCache, setFileEntryResultInCache } from './cache';
 import { getUnstagedFiles, filterToUnstaged } from './git';
 import { runChecks, buildCheckContext, severityOf, groupBy } from './checks';
@@ -6,10 +8,12 @@ import type { LintIssue, Severity } from './checks';
 export { severityOf, groupBy };
 export type { LintIssue, Severity };
 
-export async function getLintIssues(glob: string, unstaged: boolean = false, ignoreCache: boolean = false) {
+export async function getLintIssues(glob: string, unstaged: boolean = false, ignoreCache: boolean = false, verbose: boolean = false) {
 	await ensureCacheDir();
 	const cwd = process.cwd();
 	const files = new Bun.Glob(glob).scan({ cwd });
+
+	const spinner = verbose ? ora({ text: 'Discovering files…', discardStdin: false }).start() : null;
 
 	// Collect all matching file paths first
 	const allFilePaths: string[] = [];
@@ -22,10 +26,16 @@ export async function getLintIssues(glob: string, unstaged: boolean = false, ign
 		? filterToUnstaged(allFilePaths, await getUnstagedFiles())
 		: allFilePaths;
 
+	if (spinner) spinner.text = `Found ${filePaths.length} file${filePaths.length === 1 ? '' : 's'} to lint`;
+
 	const issues: LintIssue[] = [];
 
-	for (const filePath of filePaths) {
+	for (let i = 0; i < filePaths.length; i++) {
+		const filePath = filePaths[i];
+		const relPath = path.relative(cwd, filePath);
 		const file = Bun.file(filePath);
+
+		if (spinner) spinner.text = `[${i + 1}/${filePaths.length}] ${relPath}`;
 
 		const c = ignoreCache ? undefined : await getFileEntryResultFromCache(filePath);
 
@@ -36,9 +46,14 @@ export async function getLintIssues(glob: string, unstaged: boolean = false, ign
 
 		const raw = await file.text();
 		const ctx = buildCheckContext(filePath, raw);
-		const fileIssues = await runChecks(ctx);
+		const onCheck = spinner
+			? (checkId: string) => { spinner.text = `[${i + 1}/${filePaths.length}] ${relPath} — ${checkId}`; }
+			: undefined;
+		const fileIssues = await runChecks(ctx, onCheck);
 		issues.push(...fileIssues);
 	}
+
+	if (spinner) spinner.succeed(`Linted ${filePaths.length} file${filePaths.length === 1 ? '' : 's'}`);
 
 	await cacheLintIssues(issues);
 

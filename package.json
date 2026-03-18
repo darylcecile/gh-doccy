@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "repository": {
-	"url": "https://github.com/darylcecile/gh-doccy"
+    "url": "https://github.com/darylcecile/gh-doccy"
   },
   "bin": {
     "doccy": "src/index.ts"
@@ -33,6 +33,7 @@
     "hunspell-spellchecker": "^1.0.2",
     "mdast-util-from-markdown": "^2.0.3",
     "ms": "4.0.0-nightly.202508271359",
+    "ora": "^9.3.0",
     "unist-util-visit": "^5.1.0",
     "zod": "^4.3.6"
   }
