@@ -79,6 +79,9 @@ export type SpellingIssue = {
 /** Node types whose text content should not be spell-checked */
 const SKIP_TYPES = new Set(config.skipTypes || []);
 
+/** Words from the user's dictionary config that should be ignored during spell-checking */
+const IGNORED_WORDS = new Set((config.dictionary || []).map(w => w.toLowerCase()));
+
 /** Number of characters to include on each side of a misspelled word for context */
 const CONTEXT_RADIUS = 30;
 
@@ -116,6 +119,8 @@ export async function spellCheck(markdown: string): Promise<SpellingIssue[]> {
 
 			// Skip file extensions (e.g. "md" in "contributing.md")
 			if (match.index > 0 && value[match.index - 1] === ".") continue;
+
+			if (IGNORED_WORDS.has(word.toLowerCase())) continue;
 
 			if (!spellchecker.check(word)) {
 				// Calculate the position of this word within the document.

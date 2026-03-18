@@ -2,6 +2,10 @@ import { Command } from "commander";
 import { initDocs } from './action/init';
 import { lintDocs } from "./action/lint";
 import { reviewDocs } from './action/review';
+import { loadConfig } from './utils/config';
+
+const config = await loadConfig();
+const defaultGlob = `${config.root}/**/*.md`;
 
 export function cli() {
 	const program = new Command();
@@ -19,7 +23,7 @@ export function cli() {
 
 	program.command('lint')
 		.description('Check the documentation for issues and staleness')
-		.option('-g, --glob <pattern>', 'Glob pattern to specify which markdown files to lint', 'docs/**/*.md')
+		.option('-g, --glob <pattern>', 'Glob pattern to specify which markdown files to lint', defaultGlob)
 		.option('-u, --unstaged', 'Only lint files that have unstaged changes', false)
 		.option('-f, --force', 'Force linting skipping cache', false)
 		.option('-l, --level <level>', 'Only show issues with "error" severity, hiding "warn" level issues') // default to error output in CI environments
@@ -28,7 +32,7 @@ export function cli() {
 
 	program.command('review')
 		.description('Review docs')
-		.option('-g, --glob <pattern>', 'Glob pattern to specify which markdown files to review', 'docs/**/*.md')
+		.option('-g, --glob <pattern>', 'Glob pattern to specify which markdown files to review', defaultGlob)
 		.option('-u, --unstaged', 'Only review files that have unstaged changes', false)
 		.option('-y, --yes', 'Automatically approve all changes without prompting', false)
 		.action(opt => reviewDocs(opt));

@@ -71,6 +71,10 @@ skipTypes:
   - inlineCode
   - html
 dictionaryLang: en_US          # en_US or en_GB
+dictionary:                    # words the spellchecker should ignore
+  - doccy
+  - kubernetes
+root: docs                     # folder to scan for markdown files
 dateFormat: DD-MMM-YYYY
 defaultStalenessThreshold: 30d
 strictness:
@@ -79,6 +83,16 @@ strictness:
   missingData: warn
   brokenLinks: error
 ```
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `skipTypes` | `string[]` | `["code", "inlineCode", "html"]` | AST node types to skip during spell-checking |
+| `dictionaryLang` | `"en_US" \| "en_GB"` | `"en_US"` | Language dictionary for spell-checking |
+| `dictionary` | `string[]` | `[]` | Custom words the spellchecker should ignore |
+| `root` | `string` | `"docs"` | Root folder to scan for markdown files |
+| `dateFormat` | `string` | `"DD-MMM-YYYY"` | Expected date format in frontmatter |
+| `defaultStalenessThreshold` | `string` | `"30d"` | Default staleness threshold (e.g. `12hr`, `30d`, `4w`) |
+| `strictness` | `object` | See below | Severity levels for each check type |
 
 ### Frontmatter
 
