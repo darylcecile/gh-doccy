@@ -11,13 +11,13 @@ export type { LintIssue, Severity };
 export async function getLintIssues(glob: string, unstaged: boolean = false, ignoreCache: boolean = false, verbose: boolean = false) {
 	await ensureCacheDir();
 	const cwd = process.cwd();
-	const files = new Bun.Glob(glob).scan({ cwd });
+	const files = new Bun.Glob(glob).scanSync({ cwd });
 
 	const spinner = verbose ? ora({ text: 'Discovering files…', discardStdin: false }).start() : null;
 
 	// Collect all matching file paths first
 	const allFilePaths: string[] = [];
-	for await (const fileName of files) {
+	for (const fileName of files) {
 		allFilePaths.push(`${cwd}/${fileName}`);
 	}
 
@@ -31,7 +31,7 @@ export async function getLintIssues(glob: string, unstaged: boolean = false, ign
 	const issues: LintIssue[] = [];
 
 	for (let i = 0; i < filePaths.length; i++) {
-		const filePath = filePaths[i];
+		const filePath = filePaths.at(i)!;
 		const relPath = path.relative(cwd, filePath);
 		const file = Bun.file(filePath);
 

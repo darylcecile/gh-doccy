@@ -11,6 +11,21 @@ import enUSLargeDIC from "./lang/en_US-large.dic" with { type: "file" };
 import { loadConfig } from './config';
 import { weakCache } from "./mem";
 
+// @ts-expect-error — no types available for this module, but it works and has no exports
+import SC from "simple-spellchecker";
+
+const dict = await new Promise((resolve, reject) => {
+	// @ts-expect-error — no types available for this module, but it works and has no exports
+	SC.getDictionary("en-US", function(err, dictionary) {
+		if (err) {
+			console.error("Error loading dictionary:", err);
+			reject(err);
+		} else {
+			resolve(dictionary);
+		}
+	});
+});
+
 const spellchecker = new Spellcheck();
 const config = await loadConfig();
 
@@ -114,7 +129,8 @@ export async function spellCheck(markdown: string): Promise<SpellingIssue[]> {
 					column,
 					offset,
 					context,
-					suggestions: spellchecker.suggest(word),
+					// @ts-expect-error — the types for this module are wrong, but it does return an array of strings
+					suggestions: dict.getSuggestions(word) ?? [] //spellchecker.suggest(word, 3),
 				});
 			}
 		}
