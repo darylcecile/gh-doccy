@@ -7,3 +7,8 @@ declare module "*.dic" {
     const filePath: string;
     export default filePath;
 }
+
+declare module "*.zip" {
+	const filePath: string;
+	export default filePath;
+}

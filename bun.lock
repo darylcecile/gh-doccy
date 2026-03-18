@@ -6,6 +6,7 @@
       "name": "gh-doccy",
       "dependencies": {
         "@clack/prompts": "^1.1.0",
+        "@darylcecile/simple-spellchecker": "^1.0.1",
         "@types/ora": "^3.2.0",
         "commander": "^14.0.3",
         "dayjs": "^1.11.20",
@@ -33,6 +34,8 @@
     "@clack/core": ["@clack/core@1.1.0", "", { "dependencies": { "sisteransi": "^1.0.5" } }, "sha512-SVcm4Dqm2ukn64/8Gub2wnlA5nS2iWJyCkdNHcvNHPIeBTGojpdJ+9cZKwLfmqy7irD4N5qLteSilJlE0WLAtA=="],
 
     "@clack/prompts": ["@clack/prompts@1.1.0", "", { "dependencies": { "@clack/core": "1.1.0", "sisteransi": "^1.0.5" } }, "sha512-pkqbPGtohJAvm4Dphs2M8xE29ggupihHdy1x84HNojZuMtFsHiUlRvqD24tM2+XmI+61LlfNceM3Wr7U5QES5g=="],
+
+    "@darylcecile/simple-spellchecker": ["@darylcecile/simple-spellchecker@1.0.1", "", { "dependencies": { "adm-zip": "^0.5.4", "binarysearch": "^0.2.4", "damerau-levenshtein": "^1.0.5", "tmp": "^0.1.0" } }, "sha512-Ty0cBps60Ti5FY1zxfL4dKZuXYSXxnclOyhcBRhZ0lXJCPzyDYk6M202AKbZ+SSNKE68sX/CxByvfRXk9YtvCQ=="],
 
     "@types/bun": ["@types/bun@1.3.10", "", { "dependencies": { "bun-types": "1.3.10" } }, "sha512-0+rlrUrOrTSskibryHbvQkDOWRJwJZqZlxrUs1u4oOoTln8+WIXBPmAuCF35SWB2z4Zl3E84Nl/D0P7803nigQ=="],
 

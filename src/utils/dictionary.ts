@@ -11,20 +11,38 @@ import enUSLargeDIC from "./lang/en_US-large.dic" with { type: "file" };
 import { loadConfig } from './config';
 import { weakCache } from "./mem";
 
-// @ts-expect-error — no types available for this module, but it works and has no exports
-import SC from "simple-spellchecker";
+import SC from "@darylcecile/simple-spellchecker";
+import { mkdir } from "node:fs/promises";
+import { doccyBenchDir } from './cache';
 
-const dict = await new Promise((resolve, reject) => {
-	// @ts-expect-error — no types available for this module, but it works and has no exports
-	SC.getDictionary("en-US", function(err, dictionary) {
-		if (err) {
-			console.error("Error loading dictionary:", err);
-			reject(err);
-		} else {
-			resolve(dictionary);
+const cSources = {
+	"en_GB": "https://github.com/darylcecile/simple-spellchecker/raw/refs/heads/master/dict/en-GB.zip",
+	"en_US": "https://github.com/darylcecile/simple-spellchecker/raw/refs/heads/master/dict/en-US.zip",
+}
+
+async function getDict(lang: "en_GB" | "en_US" = "en_US") {
+	const downloadsFolder = `${doccyBenchDir}/downloads`;
+	await mkdir(downloadsFolder, { recursive: true });
+
+	switch (lang) {
+		case "en_GB": {
+			const p = `${downloadsFolder}/en-GB`;
+			const zip = `${p}.zip`;
+			const source = Bun.file(zip);
+			if (await source.exists() === false) await source.write(await fetch(cSources[lang]));
+			return SC.getDictionaryFromZip(zip, downloadsFolder);
 		}
-	});
-});
+		case "en_US": {
+			const p = `${downloadsFolder}/en-US`;
+			const zip = `${p}.zip`;
+			const source = Bun.file(zip);
+			if (await source.exists() === false) await source.write(await fetch(cSources[lang]));
+			return SC.getDictionaryFromZip(zip, downloadsFolder);
+		}
+		default:
+			fatal(`Unsupported language: ${lang}`);
+	}
+}
 
 const spellchecker = new Spellcheck();
 const config = await loadConfig();
@@ -67,6 +85,8 @@ const CONTEXT_RADIUS = 30;
 export async function spellCheck(markdown: string): Promise<SpellingIssue[]> {
 	const dictionary = await getDictionary(config.dictionaryLang);
 	spellchecker.use(dictionary);
+
+	const dict = await getDict(config.dictionaryLang);
 
 	const tree = fromMarkdown(markdown);
 	const lines = markdown.split("\n");
@@ -129,7 +149,6 @@ export async function spellCheck(markdown: string): Promise<SpellingIssue[]> {
 					column,
 					offset,
 					context,
-					// @ts-expect-error — the types for this module are wrong, but it does return an array of strings
 					suggestions: dict.getSuggestions(word) ?? [] //spellchecker.suggest(word, 3),
 				});
 			}

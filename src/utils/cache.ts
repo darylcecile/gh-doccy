@@ -2,8 +2,8 @@ import { mkdir, readFile, appendFile } from 'node:fs/promises';
 import { fatal } from './logs';
 
 const currentDir = process.cwd();
-const cacheDir = `${currentDir}/.doccy`;
-let cacheFile = Bun.file(`${cacheDir}/cache.yaml`);
+export const doccyBenchDir = `${currentDir}/.doccy`;
+let cacheFile = Bun.file(`${doccyBenchDir}/cache.yaml`);
 
 /** @internal Reset cache file reference. Only intended for use in tests. */
 export function _setCacheFile(path: string) {
@@ -29,14 +29,14 @@ type CacheContent = {
 }
 
 export function getCacheDir() {
-	return cacheDir;
+	return doccyBenchDir;
 }
 
 export async function ensureCacheDir() {
 	try {
-		await mkdir(cacheDir, { recursive: true });
+		await mkdir(doccyBenchDir, { recursive: true });
 	} catch (err) {
-		fatal(`Failed to create cache directory at ${cacheDir}: ${err}`);
+		fatal(`Failed to create cache directory at ${doccyBenchDir}: ${err}`);
 	}
 
 	const gitignorePath = `${currentDir}/.gitignore`;
