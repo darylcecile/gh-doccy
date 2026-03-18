@@ -6,6 +6,8 @@ import { weakCache } from "./mem";
 const configSchema = z.object({
 	skipTypes: z.array(z.string()).optional().default(["code", "inlineCode", "html"]),
 	dictionaryLang: z.enum(["en_GB", "en_US"]).optional().default("en_US"),
+	dictionary: z.array(z.string()).optional().default([]),
+	root: z.string().optional().default("docs"),
 	dateFormat: z.string().optional().default("DD-MMM-YYYY"),
 	defaultStalenessThreshold: z.string().refine((val) => parse(val) !== Number.NaN, {
 		message: "Invalid staleness threshold format. Use formats like '12hr', '30d', '4w', '6M', '1y'."

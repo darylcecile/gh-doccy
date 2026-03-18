@@ -2,7 +2,7 @@ import { cli } from "./cli";
 
 if (import.meta.main) {
   // this file is directly executed with `bun run`
-  await cli().parseAsync();
+  await (await cli()).parseAsync();
 } else {
   // this file is being imported by another file
 
